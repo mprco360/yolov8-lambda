@@ -1,0 +1,26 @@
+(Optional : create a virtual environment)
+    install virtual-environment by running the below command
+        pip install virtualenv
+        cd {project_dir}
+        python3.10 -m venv {environment name}
+        source env/bin/activate
+
+now install the recommended packages by using
+
+pip install -r requirements.txt
+
+after installing the packages, if we want to use the program for passing the video files use
+    python {path_to_pythonfile}
+    -s "source to the database or data file "
+     -d "source to the results of the image" 
+     --imagemode "pass this argument weather if we want to use image api or video type for processing" 
+     -t "threshold for the classification of the model"
+
+     example of a sample query:
+        python /home/sonu/intern/module.py -s "/home/sonu/intern/OEP database" -d "/home/sonu/intern/results" --imagemode "False" -t 76
+
+    example of the sample api query:
+
+    run the api.py file to process the image as an api call
+        
+        
