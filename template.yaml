@@ -7,6 +7,11 @@ Globals:
     MemorySize: 5000
 
 Resources:
+  ImageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ImageQueue
+      VisibilityTimeout: 910
   InferenceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -20,6 +25,31 @@ Resources:
             Path: /detect
             Method: post
       Policies:
+         - SQSSendMessagePolicy:
+            QueueName: !GetAtt ImageQueue.QueueName
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref ImageQueue
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./fetch_image
+      DockerTag: python3.11-v1
+  
+  ProcessImageLambda:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+      - x86_64
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ImageQueue.Arn
+            BatchSize: 1
+      Policies:
+        - SQSPollerPolicy:
+            QueueName: !GetAtt ImageQueue.QueueName
         - Statement:
             Effect: Allow
             Action:
@@ -31,6 +61,8 @@ Resources:
       Dockerfile: Dockerfile
       DockerContext: ./app
       DockerTag: python3.11-v1
+    
+
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -58,3 +90,6 @@ Outputs:
   InferenceFunctionIamRole:
     Description: Implicit IAM Role created for Inference function
     Value: !GetAtt InferenceFunctionRole.Arn
+  ProcessImageLambdaFunction:
+    Description: "Process Image Lambda Function ARN"
+    Value: !GetAtt ProcessImageLambda.Arn
