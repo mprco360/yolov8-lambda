@@ -7,11 +7,21 @@ Globals:
     MemorySize: 5000
 
 Resources:
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ImageQueueDLQ
   ImageQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: ImageQueue
       VisibilityTimeout: 910
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt:
+            - "DeadLetterQueue"
+            - "Arn"
+        maxReceiveCount: 5
   InferenceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -57,6 +67,14 @@ Resources:
               - s3:GetObject
               - s3:DeleteObject
             Resource: "arn:aws:s3:::*/*" #during production , change this to a single bucket 
+        - Statement:
+            Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DeleteNetworkInterface
+              - ec2:AttachNetworkInterface
+            Resource: "*"
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./app
@@ -93,3 +111,6 @@ Outputs:
   ProcessImageLambdaFunction:
     Description: "Process Image Lambda Function ARN"
     Value: !GetAtt ProcessImageLambda.Arn
+  DeadLetterQueueUrl:
+    Description: "Dead Letter Queue URL"
+    Value: !Ref DeadLetterQueue

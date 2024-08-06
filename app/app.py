@@ -5,6 +5,12 @@ import PIL
 from PIL import Image
 from io import BytesIO
 import boto3
+import os
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+import datetime
+from datetime import datetime
+import math
 
 
 
@@ -87,10 +93,46 @@ def lambda_handler(event, context):
                     "session_id": session_id,
                     "detected_objects": detected_objects
                 }
+            detected_dict_formatted = []
+            for key in detected_objects:
+                if detected_objects[key]["count"] > 1:
+                    detected_dict_formatted.append({"name":f"multiple_{key}'s","confidence":round(sum(detected_objects[key]["confidence"])/detected_objects[key]["count"],4)})
+                for i in range(detected_objects[key]["count"]):
+                    detected_dict_formatted.append({"name":f"{key}_{i}","confidence":detected_objects[key]["confidence"][i]}) 
+            print(detected_dict_formatted)
             buffer = BytesIO()
             img.save(buffer, 'JPEG')
             buffer.seek(0)
             s3_client.Bucket(bucket_name).upload_fileobj(buffer,  f'test/ai/{session_id}.jpg', ExtraArgs={'ContentType': 'image/jpeg'})
+
+            uri = os.environ['MONGO_URL']
+            print(f"uri is {uri}")
+
+            # Create a new client and connect to the server
+            client = MongoClient(uri, server_api=ServerApi('1'))
+
+            # Send a ping to confirm a successful connection
+            try:
+                client.admin.command('ping')
+                print("Pinged your deployment. You successfully connected to MongoDB!")
+            except Exception as e:
+                print(e)
+            
+            db = client.proctor360
+            collection = db.ai_live_labels
+            data = {
+                "labels": detected_dict_formatted,
+                "face_matched": True,
+                "image": f'test/ai/{session_id}.jpg',
+                "organisation_id": 1,
+                "session_link": "vZjLNh5O9wE3C3te0PqY",
+                "student_session_id": 6211,
+                "exam_id": 2236,
+                "created_at": {"$date": datetime.utcnow()},
+                "updated_at": {"$date": datetime.utcnow()}
+            }
+
+            result = collection.insert_one(data)
             return {
                 'statusCode':200,
                 'body': json.dumps(response)
