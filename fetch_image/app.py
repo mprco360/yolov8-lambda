@@ -16,6 +16,8 @@ def fetch_image_handler(event,context):
         if "image_url" in data and "source_dir" in data and "destination_dir" in data:
             image_url = data["image_url"]
             try :
+                if "s3" in image_url:
+                    s3_client = boto3.resource('s3')
                 response = requests.get(image_url)
                 if response.status_code == 200:
                     data["image"] = response.content.hex()

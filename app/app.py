@@ -96,7 +96,7 @@ def lambda_handler(event, context):
             detected_dict_formatted = []
             for key in detected_objects:
                 if detected_objects[key]["count"] > 1:
-                    detected_dict_formatted.append({"name":f"multiple_{key}'s","confidence":round(sum(detected_objects[key]["confidence"])/detected_objects[key]["count"],4)})
+                    detected_dict_formatted.append({"name":f"multiple_{key}","confidence":round(sum(detected_objects[key]["confidence"])/detected_objects[key]["count"],4)})
                 for i in range(detected_objects[key]["count"]):
                     detected_dict_formatted.append({"name":f"{key}_{i}","confidence":detected_objects[key]["confidence"][i]}) 
             print(detected_dict_formatted)
@@ -109,7 +109,7 @@ def lambda_handler(event, context):
             print(f"uri is {uri}")
 
             # Create a new client and connect to the server
-            client = MongoClient(uri, server_api=ServerApi('1'))
+            client = MongoClient(uri,server_api = ServerApi(version="1"))
 
             # Send a ping to confirm a successful connection
             try:

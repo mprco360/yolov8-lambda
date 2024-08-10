@@ -17,17 +17,14 @@ Resources:
       QueueName: ImageQueue
       VisibilityTimeout: 910
       RedrivePolicy:
-        deadLetterTargetArn:
-          Fn::GetAtt:
-            - "DeadLetterQueue"
-            - "Arn"
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
         maxReceiveCount: 5
   InferenceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       PackageType: Image
       Architectures:
-      - x86_64
+        - x86_64
       Events:
         Inference:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -35,8 +32,13 @@ Resources:
             Path: /detect
             Method: post
       Policies:
-         - SQSSendMessagePolicy:
+        - SQSSendMessagePolicy:
             QueueName: !GetAtt ImageQueue.QueueName
+        - Statement:
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: arn:aws:s3:::*/* #during production , change this to a single bucket 
       Environment:
         Variables:
           QUEUE_URL: !Ref ImageQueue
@@ -44,13 +46,13 @@ Resources:
       Dockerfile: Dockerfile
       DockerContext: ./fetch_image
       DockerTag: python3.11-v1
-  
+
   ProcessImageLambda:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       PackageType: Image
       Architectures:
-      - x86_64
+        - x86_64
       Events:
         SQSEvent:
           Type: SQS
@@ -66,7 +68,7 @@ Resources:
               - s3:PutObject
               - s3:GetObject
               - s3:DeleteObject
-            Resource: "arn:aws:s3:::*/*" #during production , change this to a single bucket 
+            Resource: arn:aws:s3:::*/* #during production , change this to a single bucket 
         - Statement:
             Effect: Allow
             Action:
@@ -74,26 +76,36 @@ Resources:
               - ec2:DescribeNetworkInterfaces
               - ec2:DeleteNetworkInterface
               - ec2:AttachNetworkInterface
-            Resource: "*"
+            Resource: '*'
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./app
       DockerTag: python3.11-v1
-    
 
+  ProcessImageLambdaVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref ProcessImageLambda
+
+  ProcessImageLambdaProvisionedConcurrency:
+    Type: AWS::Lambda::Alias
+    Properties:
+      FunctionName: !Ref ProcessImageLambda
+      FunctionVersion: !GetAtt ProcessImageLambdaVersion.Version
+      Name: Provisioned
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 5
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
-      Name:
-        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
       ResourceQuery:
         Type: CLOUDFORMATION_STACK_1_0
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
-      ResourceGroupName:
-        Ref: ApplicationResourceGroup
+      ResourceGroupName: !Ref ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -101,7 +113,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   InferenceApi:
     Description: API Gateway endpoint URL for Prod stage for Inference function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/detect/"
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/detect/
   InferenceFunction:
     Description: Inference Lambda Function ARN
     Value: !GetAtt InferenceFunction.Arn
@@ -109,8 +121,8 @@ Outputs:
     Description: Implicit IAM Role created for Inference function
     Value: !GetAtt InferenceFunctionRole.Arn
   ProcessImageLambdaFunction:
-    Description: "Process Image Lambda Function ARN"
+    Description: Process Image Lambda Function ARN
     Value: !GetAtt ProcessImageLambda.Arn
   DeadLetterQueueUrl:
-    Description: "Dead Letter Queue URL"
+    Description: Dead Letter Queue URL
     Value: !Ref DeadLetterQueue
