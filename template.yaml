@@ -77,6 +77,16 @@ Resources:
               - ec2:DeleteNetworkInterface
               - ec2:AttachNetworkInterface
             Resource: '*'
+
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0b459a3965993b898
+        SubnetIds:
+          - subnet-3a7e5a5d
+
+      Environment:
+        Variables:
+          MONGO_URL: "mongodb+srv://mrunal-p360:qLekk9TJHctxgrmm@cluster0.zevqw.mongodb.net/proctor360?authSource=admin&replicaSet=atlas-s7hf6n-shard-0&readPreference=primary&ssl=true"
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./app
