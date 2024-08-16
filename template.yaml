@@ -37,7 +37,9 @@ Resources:
         - Statement:
             Effect: Allow
             Action:
+              - s3:PutObject
               - s3:GetObject
+              - s3:DeleteObject
             Resource: arn:aws:s3:::*/* #during production , change this to a single bucket 
       Environment:
         Variables:
@@ -104,7 +106,7 @@ Resources:
       FunctionVersion: !GetAtt ProcessImageLambdaVersion.Version
       Name: Provisioned
       ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 5
+        ProvisionedConcurrentExecutions: 10
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group

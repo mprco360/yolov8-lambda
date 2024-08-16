@@ -66,10 +66,10 @@ def lambda_handler(event, context):
             data = tmp_rec
     print(data)
     if data:
-        if "image" in data and "source_dir" in data and "destination_dir" in data:
-            session_id = data["session_id"]
-            source = data["source_dir"]
-            destination = data["destination_dir"]
+        if "image" in data or "is_image_found" in data:
+            session_id = data["student_session_id"]
+            source = ""
+            destination = "."
             bucket_name = data["bucket_name"]
             p = Prediction(source,destination)
             if "object_dict" in data:
@@ -84,9 +84,13 @@ def lambda_handler(event, context):
                     "width":4,
                     "threshold":75
                 }
-            decoded_bytes = bytes.fromhex(data["image"])
-            img = Image.open(BytesIO(decoded_bytes))
-            #img = img.resize((640,480))b6948ae9779f
+            if "is_image_found" in data and "image" not in data:
+                response = s3_client.Bucket(data["src_bucket_name"]).Object(data["src_destination"]).get()
+                decoded_bytes = response['Body'].read()
+                img = Image.open(BytesIO(decoded_bytes))
+            else:
+                decoded_bytes = bytes.fromhex(data["image"])
+                img = Image.open(BytesIO(decoded_bytes))
             image_dict = {"session_id":session_id,"image":img}
             detected_objects,img = p.process(object_dict,imagemode=True,image_dict=image_dict)
             response = {
@@ -97,13 +101,14 @@ def lambda_handler(event, context):
             for key in detected_objects:
                 if detected_objects[key]["count"] > 1:
                     detected_dict_formatted.append({"name":f"multiple_{key}","confidence":round(sum(detected_objects[key]["confidence"])/detected_objects[key]["count"],4)})
-                for i in range(detected_objects[key]["count"]):
-                    detected_dict_formatted.append({"name":f"{key}_{i}","confidence":detected_objects[key]["confidence"][i]}) 
+                else:
+                    detected_dict_formatted.append({"name":f"{key}","confidence":detected_objects[key]["confidence"][0]})
             print(detected_dict_formatted)
             buffer = BytesIO()
             img.save(buffer, 'JPEG')
             buffer.seek(0)
-            s3_client.Bucket(bucket_name).upload_fileobj(buffer,  f'test/ai/{session_id}.jpg', ExtraArgs={'ContentType': 'image/jpeg'})
+            # add the destination_url to the path
+            s3_client.Bucket(bucket_name).upload_fileobj(buffer,  f'test/ai/{session_id}_{data["session_link"]}_{datetime.utcnow()}.jpg', ExtraArgs={'ContentType': 'image/jpeg'})
 
             uri = os.environ['MONGO_URL']
             print(f"uri is {uri}")
@@ -124,12 +129,13 @@ def lambda_handler(event, context):
                 "labels": detected_dict_formatted,
                 "face_matched": True,
                 "image": f'test/ai/{session_id}.jpg',
-                "organisation_id": 1,
-                "session_link": "vZjLNh5O9wE3C3te0PqY",
-                "student_session_id": 6211,
-                "exam_id": 2236,
-                "created_at": {"$date": datetime.utcnow()},
-                "updated_at": {"$date": datetime.utcnow()}
+                "organisation_id": data["organisation_id"],
+                "session_link": data["session_link"],
+                "student_session_id": data["student_session_id"],
+                "exam_id": data["exam_id"],
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+                "type": "yolo",
             }
 
             result = collection.insert_one(data)

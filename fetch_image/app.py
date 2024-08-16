@@ -5,7 +5,7 @@ import requests
 from urllib.parse import urlparse
 
 
-def fetch_image_handler(event,context):
+def fetch_image_handler(event, context):
     sqs = boto3.client('sqs')
     queue_url = os.environ['QUEUE_URL']
     try:
@@ -19,10 +19,6 @@ def fetch_image_handler(event,context):
         missing_string = ""
         if "image_url" not in data:
             missing_string += " image_url"
-        if "source_dir" not in data:
-            missing_string += " source_dir"
-        if "destination_dir" not in data:
-            missing_string += " destination_dir"
         if "organisation_id" not in data:
             missing_string += " organisation_id"
         if "session_link" not in data:
@@ -37,14 +33,26 @@ def fetch_image_handler(event,context):
                 'body': json.dumps(f'Missing parameters {missing_string}')
             }
         image_url = data["image_url"]
-        try :
+        try:
+            print(image_url)
             if "s3" in image_url:
+                print(image_url)
                 s3_client = boto3.resource('s3')
                 parsed_url = urlparse(image_url)
                 bucket_name = parsed_url.netloc.split(".")[0]
                 destination_ = parsed_url.path.lstrip("/")
-                response = s3_client.get_object(Bucket = bucket_name,key=destination_)
-                data["image"] = response["Body"].read().hex()
+                print(bucket_name, destination_)
+                response = s3_client.Bucket(bucket_name).Object(destination_).get()
+                print(response)
+                if response and response["ResponseMetadata"]['HTTPStatusCode'] == 200:
+                    data["is_image_found"] = True
+                    data["src_bucket_name"] = bucket_name
+                    data["src_destination"] = destination_
+                else:
+                    return {
+                        'statusCode': 404,
+                        'body': json.dumps('Failed to fetch image')
+                    }
             else:
                 response = requests.get(image_url)
                 if response.status_code == 200:
@@ -55,8 +63,8 @@ def fetch_image_handler(event,context):
                         'body': json.dumps('Failed to fetch image')
                     }
             sqs.send_message(
-            QueueUrl=queue_url,
-            MessageBody=json.dumps(data)
+                QueueUrl=queue_url,
+                MessageBody=json.dumps(data)
             )
             return {
                 'statusCode': 200,
@@ -64,6 +72,6 @@ def fetch_image_handler(event,context):
             }
         except:
             return {
-                    'statusCode': 404,
-                    'body': json.dumps('Failed to fetch image')
-                }
+                'statusCode': 404,
+                'body': json.dumps('Failed to fetch image')
+            }

@@ -12,13 +12,7 @@ parallel = true
 [default.validate.parameters]
 lint = true
 
-[default.deploy.parameters]
-capabilities = "CAPABILITY_IAM"
-confirm_changeset = true
-resolve_s3 = true
-resolve_image_repos = true
-s3_prefix = "yolo"
-region = "us-east-1"
+
 
 [default.package.parameters]
 resolve_s3 = true
@@ -31,3 +25,10 @@ warm_containers = "EAGER"
 
 [default.local_start_lambda.parameters]
 warm_containers = "EAGER"
+
+[default.deploy.parameters]
+resolve_s3 = true
+s3_prefix = "yolo"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["InferenceFunction=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/inferencefunction7c73919drepo", "ProcessImageLambda=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/processimagelambdafb51752crepo"]
