@@ -1,0 +1,31 @@
+config:
+  target: "https://ypuo9b1ouh.execute-api.us-east-1.amazonaws.com/Prod/"
+  phases:
+    - name : "Warm up"
+      duration: 60
+      arrivalRate: 10
+    - name: "Ramp up"
+      duration: 300
+      arrivalRate: 20
+      rampTo: 100
+    - name: "Sustained"
+      duration: 600
+      arrivalRate: 20
+  defaults:
+    headers:
+      Content-Type: "application/json"
+#  payload:
+#    path: "./payload.json"
+
+scenarios:
+  - name: "Load Test Scenario"
+    flow:
+      - post:
+          url: "/detect"
+          json:
+            "image_url": "https://media.gettyimages.com/id/827810826/photo/group-of-college-students-in-exam-teacher-watching.jpg?s=612x612&w=gi&k=20&c=0JCDcHrK3MlUrh96mavjjqMMOUiOR6gHuJM2emj9h70="
+            "bucket_name": "proctor360"
+            "organisation_id": "12345"
+            "session_link": "vs1234"
+            "exam_id": "12345"
+            "student_session_id": 1234

@@ -55,12 +55,20 @@
     "apiId": "1234567890",
     "protocol": "HTTP/1.1"
   },
-  "body": {
-    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/1606394458561-1606394459314.png",
-    "bucket_name": "proctor360",
-    "organisation_id":"12345",
-    "session_link":"vs1234",
-    "exam_id":"12345",
-    "student_session_id":1234
-  }
+  "Records": [
+    {
+      "body": {
+        "is_image_found": true,
+        "student_session_id": 1234,
+        "bucket_name": "proctor360",
+        "src_bucket_name": "proctor360",
+        "src_destination": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
+        "organisation_id": "12345",
+        "session_link": "vs1234",
+        "exam_id": "12345",
+        "ground_truth": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
+        "ground_bucket_name": "proctor360"
+      }
+    }
+  ]
 }

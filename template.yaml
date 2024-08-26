@@ -106,7 +106,7 @@ Resources:
       FunctionVersion: !GetAtt ProcessImageLambdaVersion.Version
       Name: Provisioned
       ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 10
+        ProvisionedConcurrentExecutions: 100
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group

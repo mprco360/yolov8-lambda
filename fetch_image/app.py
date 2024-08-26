@@ -34,16 +34,12 @@ def fetch_image_handler(event, context):
             }
         image_url = data["image_url"]
         try:
-            print(image_url)
             if "s3" in image_url:
-                print(image_url)
                 s3_client = boto3.resource('s3')
                 parsed_url = urlparse(image_url)
                 bucket_name = parsed_url.netloc.split(".")[0]
                 destination_ = parsed_url.path.lstrip("/")
-                print(bucket_name, destination_)
                 response = s3_client.Bucket(bucket_name).Object(destination_).get()
-                print(response)
                 if response and response["ResponseMetadata"]['HTTPStatusCode'] == 200:
                     data["is_image_found"] = True
                     data["src_bucket_name"] = bucket_name
