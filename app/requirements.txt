@@ -1,4 +1,3 @@
-opencv-python-headless
 boto3
 Flask
 Flask-Compress
@@ -13,5 +12,3 @@ torchvision==0.16.0
 ultralytics==8.2.52
 ultralytics-thop==2.0.0
 pymongo
-tf-keras
-deepface

@@ -14,7 +14,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
 import math
-from deepface import DeepFace
 
 
 def lambda_handler(event, context):
@@ -76,9 +75,6 @@ def lambda_handler(event, context):
             else:
                 decoded_bytes = bytes.fromhex(data["image"])
                 img = Image.open(BytesIO(decoded_bytes))
-            ground_truth = s3_client.Bucket(data["ground_bucket_name"]).Object(data["ground_truth"]).get()
-            ground_truth_img = Image.open(BytesIO(ground_truth['Body'].read()))
-            result = DeepFace.verify(np.array(ground_truth_img.convert("RGB")), np.array(img.convert("RGB")),model_name="OpenFace")
             image_dict = {"session_id": session_id, "image": img}
             detected_objects, img = p.process(object_dict, imagemode=True, image_dict=image_dict)
             response = {
@@ -115,6 +111,7 @@ def lambda_handler(event, context):
             print(detected_objects)
             if len(detected_dict_formatted) > 0:
                 buffer = BytesIO()
+                img = img.convert("RGB")
                 img.save(buffer, 'JPEG')
                 buffer.seek(0)
                 date = datetime.utcnow()
@@ -136,7 +133,7 @@ def lambda_handler(event, context):
                 collection = db.ai_live_labels
                 post_data = {
                     "labels": detected_dict_formatted,
-                    "face_matched": result["verified"],
+                    "face_matched": data["face_match"],
                     "image": f'test/ai/yolo_{session_id}_{data["session_link"]}_{utc_time}.jpg',
                     "organisation_id": data["organisation_id"],
                     "session_link": data["session_link"],
