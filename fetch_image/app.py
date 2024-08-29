@@ -8,7 +8,7 @@ import numpy as np
 import requests
 from urllib.parse import urlparse
 from PIL import Image
-from deepface import DeepFace
+import face_recognition
 
 
 def fetch_image_handler(event, context):
@@ -21,6 +21,7 @@ def fetch_image_handler(event, context):
             data = event["body"]
         else:
             data = event
+    print(data)
     if data:
         missing_string = ""
         if "image_url" not in data:
@@ -52,13 +53,20 @@ def fetch_image_handler(event, context):
                 decoded_bytes = response['Body'].read()
                 img = Image.open(BytesIO(decoded_bytes))
                 ground_truth_img = Image.open(BytesIO(ground_truth['Body'].read()))
-                result = DeepFace.verify(np.array(ground_truth_img.convert("RGB")), np.array(img.convert("RGB")),
-                                         model_name="OpenFace")
+                try:
+                    src_encoding = face_recognition.face_encodings(np.array(img.convert("RGB")))[0]
+                    ground_encoding = face_recognition.face_encodings(np.array(ground_truth_img.convert("RGB")))[0]
+                    res = face_recognition.compare_faces([src_encoding], ground_encoding)
+                    res = bool(res[0])
+                except:
+                    res = False
+                    print("no face detected")
                 if response and response["ResponseMetadata"]['HTTPStatusCode'] == 200:
                     data["is_image_found"] = True
                     data["src_bucket_name"] = bucket_name
                     data["src_destination"] = destination_
-                    data["face_match"] = result["verified"]
+                    data["face_match"] = res
+                    print("success")
 
                 else:
                     return {
@@ -74,6 +82,7 @@ def fetch_image_handler(event, context):
                         'statusCode': response.status_code,
                         'body': json.dumps('Failed to fetch image')
                     }
+            print(data)
             sqs.send_message(
                 QueueUrl=queue_url,
                 MessageBody=json.dumps(data)

@@ -75,6 +75,7 @@ def lambda_handler(event, context):
             else:
                 decoded_bytes = bytes.fromhex(data["image"])
                 img = Image.open(BytesIO(decoded_bytes))
+            
             image_dict = {"session_id": session_id, "image": img}
             detected_objects, img = p.process(object_dict, imagemode=True, image_dict=image_dict)
             response = {
@@ -82,9 +83,9 @@ def lambda_handler(event, context):
                 "detected_objects": detected_objects
             }
             detected_dict_formatted = []
-            labels_set = {"remote", "laptop", "tv", "cell_phone", "person", "tablet", "persons", "book"}
+            labels_set = {"remote", "laptop", "tv", "cell_phone", "person", "tablet", "persons", "book","cell phone"}
             tablet_computer = {"laptop", "tv", "tablet", "book", "tablet_computer"}
-            cell_phone = {"cell_phone", "remote"}
+            cell_phone = {"cell_phone", "remote","cell phone"}
             if len(detected_objects) == 0:
                 detected_dict_formatted.append({"name": "no_face", "confidence": 100})
             else:
@@ -111,8 +112,8 @@ def lambda_handler(event, context):
             print(detected_objects)
             if len(detected_dict_formatted) > 0:
                 buffer = BytesIO()
-                img = img.convert("RGB")
-                img.save(buffer, 'JPEG')
+                img_ = img.convert("RGB")
+                img_.save(buffer, 'JPEG')
                 buffer.seek(0)
                 date = datetime.utcnow()
                 utc_time = calendar.timegm(date.utctimetuple())

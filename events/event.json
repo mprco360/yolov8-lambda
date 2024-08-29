@@ -67,7 +67,8 @@
         "session_link": "vs1234",
         "exam_id": "12345",
         "source_image": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
-        "ground_bucket_name": "proctor360"
+        "ground_bucket_name": "proctor360",
+        "face_match": true
       }
     }
   ]

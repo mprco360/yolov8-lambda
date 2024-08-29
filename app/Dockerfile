@@ -2,7 +2,8 @@ FROM public.ecr.aws/lambda/python:3.11
 
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}/
-COPY  *.py ${LAMBDA_TASK_ROOT}/
+COPY  app.py ${LAMBDA_TASK_ROOT}/
+COPY  module.py ${LAMBDA_TASK_ROOT}/
 COPY  *.pt ${LAMBDA_TASK_ROOT}/
 COPY  *.ttf ${LAMBDA_TASK_ROOT}/
 
@@ -38,7 +39,7 @@ RUN yum install -y \
     mesa-libEGL \
     libGLU.so.1 \
     libjpeg \
-    libpng 
+    libpng
 
 # Install the specified packages
 RUN pip install -r requirements.txt

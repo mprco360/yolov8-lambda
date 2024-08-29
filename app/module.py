@@ -8,8 +8,6 @@ import torch
 import matplotlib.pyplot as plt
 import PIL
 import argparse
-import deepface
-from deepface import DeepFace
 
 
 class Prediction(object):
@@ -51,8 +49,12 @@ class Prediction(object):
         new_list = []
         print("res filter",result_summary)
         for i in range(len(result_summary)):
-            if result_summary[i]["confidence"] > threshold / 100:
-                new_list.append(result_summary[i])
+            if result_summary[i]["name"] == "person":
+                if result_summary[i]["confidence"] > 0.6:
+                    new_list.append(result_summary[i])
+            else:
+                if result_summary[i]["confidence"] > threshold / 100:
+                    new_list.append(result_summary[i])
         return new_list
 
     def _process_image(self, img, session_id, threshold=30):
@@ -78,7 +80,7 @@ class Prediction(object):
                 if object_categ_dict["name"] in tablet_computer:
                     object_categ_dict["name"] = "tablet_computer"
                 if object_categ_dict["name"] == "person":
-                    tmp = 30
+                    tmp = 60
                 if object_categ_dict["confidence"] > tmp / 100:
                     x0 = object_categ_dict["box"]["x1"]
                     y0 = object_categ_dict["box"]["y1"]
@@ -115,7 +117,7 @@ class Prediction(object):
             new_dict = {}
             for dict_ in detected_objects:
                 if round(dict_["confidence"] * 100, 2) > threshold:
-                    if dict_["name"] == "person" and dict_["confidence"] > 0.3:
+                    if dict_["name"] == "person" and dict_["confidence"] > 0.6:
                         if dict_["name"] in new_dict:
                             new_dict[dict_["name"]]["confidence"].append(round(dict_["confidence"] * 100, 2))
                             new_dict[dict_["name"]]["count"] += 1

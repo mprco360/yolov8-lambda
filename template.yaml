@@ -106,7 +106,21 @@ Resources:
       FunctionVersion: !GetAtt ProcessImageLambdaVersion.Version
       Name: Provisioned
       ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 100
+        ProvisionedConcurrentExecutions: 10
+
+  InferenceFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref InferenceFunction
+
+  InferenceFunctionProvisionedConcurrency:
+    Type: AWS::Lambda::Alias
+    Properties:
+      FunctionName: !Ref InferenceFunction
+      FunctionVersion: !GetAtt InferenceFunctionVersion.Version
+      Name: Provisioned
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 10
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
