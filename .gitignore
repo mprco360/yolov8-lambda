@@ -1,0 +1,10 @@
+app/yolov10x.pt
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/yolo.iml
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/misc.xml
+.idea/material_theme_project_new.xml
+.aws-sam/build/template.yaml
+.aws-sam/build.toml
