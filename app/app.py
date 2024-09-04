@@ -89,8 +89,10 @@ def lambda_handler(event, context):
             if len(detected_objects) == 0:
                 detected_dict_formatted.append({"name": "no_face", "confidence": 100})
             else:
-                if "person" not in detected_objects:
+                if ("person" not in detected_objects):
                     detected_dict_formatted.append({"name": "no_face", "confidence": 100})
+                elif not data["face_match"]:
+                    detected_dict_formatted.append({"name": "face_not_matched", "confidence": 100})
                 else:
                     for key in detected_objects:
                         key = key.strip()
