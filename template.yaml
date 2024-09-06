@@ -7,50 +7,53 @@ Globals:
     MemorySize: 5000
 
 Resources:
-  DeadLetterQueue:
+  DeadLetterQueueTest:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: ImageQueueDLQ
-  ImageQueue:
+      QueueName: ImageQueueDLQTest
+
+  ImageQueueTest:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: ImageQueue
+      QueueName: ImageQueueTest
       VisibilityTimeout: 910
       RedrivePolicy:
-        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        deadLetterTargetArn: !GetAtt DeadLetterQueueTest.Arn
         maxReceiveCount: 5
+
   InferenceFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       Architectures:
         - x86_64
       Events:
         Inference:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
           Properties:
             Path: /detect
             Method: post
       Policies:
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt ImageQueue.QueueName
+            QueueName: !GetAtt ImageQueueTest.QueueName
         - Statement:
             Effect: Allow
             Action:
               - s3:PutObject
               - s3:GetObject
               - s3:DeleteObject
-            Resource: arn:aws:s3:::*/* #during production , change this to a single bucket 
+            Resource: arn:aws:s3:::*/*
       Environment:
         Variables:
-          QUEUE_URL: !Ref ImageQueue
+          QUEUE_URL: !Ref ImageQueueTest
+
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./fetch_image
       DockerTag: python3.11-v1
 
   ProcessImageLambda:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       Architectures:
@@ -59,18 +62,18 @@ Resources:
         SQSEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt ImageQueue.Arn
+            Queue: !GetAtt ImageQueueTest.Arn
             BatchSize: 1
       Policies:
         - SQSPollerPolicy:
-            QueueName: !GetAtt ImageQueue.QueueName
+            QueueName: !GetAtt ImageQueueTest.QueueName
         - Statement:
             Effect: Allow
             Action:
               - s3:PutObject
               - s3:GetObject
               - s3:DeleteObject
-            Resource: arn:aws:s3:::*/* #during production , change this to a single bucket 
+            Resource: arn:aws:s3:::*/*
         - Statement:
             Effect: Allow
             Action:
@@ -79,16 +82,15 @@ Resources:
               - ec2:DeleteNetworkInterface
               - ec2:AttachNetworkInterface
             Resource: '*'
-
       VpcConfig:
         SecurityGroupIds:
           - sg-0b459a3965993b898
         SubnetIds:
           - subnet-3a7e5a5d
-
       Environment:
         Variables:
           MONGO_URL: "mongodb+srv://mrunal-p360:qLekk9TJHctxgrmm@cluster0.zevqw.mongodb.net/proctor360?authSource=admin&replicaSet=atlas-s7hf6n-shard-0&readPreference=primary&ssl=true"
+      
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./app
@@ -128,15 +130,14 @@ Resources:
       Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
       ResourceQuery:
         Type: CLOUDFORMATION_STACK_1_0
+
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
       ResourceGroupName: !Ref ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
+
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   InferenceApi:
     Description: API Gateway endpoint URL for Prod stage for Inference function
     Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/detect/
@@ -151,4 +152,4 @@ Outputs:
     Value: !GetAtt ProcessImageLambda.Arn
   DeadLetterQueueUrl:
     Description: Dead Letter Queue URL
-    Value: !Ref DeadLetterQueue
+    Value: !Ref  DeadLetterQueueTest

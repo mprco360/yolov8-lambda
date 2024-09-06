@@ -1,5 +1,5 @@
 config:
-  target: "https://ypuo9b1ouh.execute-api.us-east-1.amazonaws.com/Prod/"
+  target: "https://w3pyaln7g8.execute-api.us-east-1.amazonaws.com/Prod/"
   phases:
     - name : "Warm up"
       duration: 60
@@ -23,9 +23,11 @@ scenarios:
       - post:
           url: "/detect"
           json:
-            "image_url": "https://media.gettyimages.com/id/827810826/photo/group-of-college-students-in-exam-teacher-watching.jpg?s=612x612&w=gi&k=20&c=0JCDcHrK3MlUrh96mavjjqMMOUiOR6gHuJM2emj9h70="
+            "session_id": 123895
+            "image_url": "https://proctor360.s3.amazonaws.com/test/ai/6246_JCZoILhks1JkbO45r2MG_1724248639.jpg"
             "bucket_name": "proctor360"
             "organisation_id": "12345"
-            "session_link": "vs1234"
+            "session_link": "vs12345"
             "exam_id": "12345"
-            "student_session_id": 1234
+            "student_session_id": 12345
+            "source_image": "face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"

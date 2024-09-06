@@ -4,7 +4,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "yolo"
+stack_name = "yolo-test"
 
 [default.build.parameters]
 parallel = true
@@ -28,7 +28,7 @@ warm_containers = "EAGER"
 
 [default.deploy.parameters]
 resolve_s3 = true
-s3_prefix = "yolo"
+s3_prefix = "yolo-test"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
 image_repositories = ["InferenceFunction=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/inferencefunction7c73919drepo", "ProcessImageLambda=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/processimagelambdafb51752crepo"]

@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.11
+FROM public.ecr.aws/lambda/python:3.10-x86_64
 
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}/
@@ -41,7 +41,10 @@ RUN yum install -y \
     libjpeg \
     libpng
 
-# Install the specified packages
+
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu    
 RUN pip install -r requirements.txt
+
+
 
 CMD [ "app.lambda_handler" ]
