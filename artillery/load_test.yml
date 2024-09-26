@@ -1,5 +1,5 @@
 config:
-  target: "https://w3pyaln7g8.execute-api.us-east-1.amazonaws.com/Prod/"
+  target: "https://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod"
   phases:
     - name : "Warm up"
       duration: 60
@@ -11,6 +11,9 @@ config:
     - name: "Sustained"
       duration: 600
       arrivalRate: 20
+    - name: "Full Load"
+      duration: 600
+      arrivalRate: 1000
   defaults:
     headers:
       Content-Type: "application/json"

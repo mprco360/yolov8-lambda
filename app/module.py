@@ -50,7 +50,7 @@ class Prediction(object):
         print("res filter",result_summary)
         for i in range(len(result_summary)):
             if result_summary[i]["name"] == "person":
-                if result_summary[i]["confidence"] > 0.6:
+                if result_summary[i]["confidence"] > 0.5:
                     new_list.append(result_summary[i])
             else:
                 if result_summary[i]["confidence"] > threshold / 100:
@@ -61,34 +61,39 @@ class Prediction(object):
         s = self.model(img)
         result_summary = s[0].summary()
         default_img = s[0].orig_img
-        img = self._draw_bounding_box(default_img, result_summary, threshold=threshold)
         result_summary = self._filter(result_summary, threshold=threshold)
+        img = self._draw_bounding_box(default_img, result_summary, threshold=threshold)
         return result_summary, img
 
     def _draw_bounding_box(self, img, result_summary, fontsize=32, outline="#FF999C", width=10, radius=14,
                            threshold=30, labels_dict=None):
-        tablet_computer = {"laptop", "tv", "cell_phone", "remote", "tablet"}
+        tablet_computer = {"laptop", "tv", "tablet", "book", "tablet_computer"}
+        cell_phone = {"cell_phone", "remote", "cell phone"}
         if labels_dict is None:
-            labels_dict = {"remote", "laptop", "tv", "cell_phone", "person"}
+            labels_dict = {"remote", "laptop", "tv", "cell_phone", "person","cell phone"}
         img = Image.fromarray(img)
         draw = ImageDraw.Draw(img)
+        print("result summary is", result_summary)
         for i in range(len(result_summary)):
             object_categ_dict = result_summary[i]
-            print(object_categ_dict)
+            print("TT",object_categ_dict)
             tmp = threshold
-            if object_categ_dict["name"] in labels_dict:
-                if object_categ_dict["name"] in tablet_computer:
+            if object_categ_dict["name"].lower() in labels_dict:
+                if object_categ_dict["name"].lower() in tablet_computer:
                     object_categ_dict["name"] = "tablet_computer"
-                if object_categ_dict["name"] == "person":
-                    tmp = 60
+                if object_categ_dict["name"].lower() in cell_phone:
+                    object_categ_dict["name"] = "cell_phone"
+                if object_categ_dict["name"].lower() == "person":
+                    tmp = 50
                 if object_categ_dict["confidence"] > tmp / 100:
                     x0 = object_categ_dict["box"]["x1"]
                     y0 = object_categ_dict["box"]["y1"]
                     x1 = object_categ_dict["box"]["x2"]
                     y1 = object_categ_dict["box"]["y2"]
-                    text = "{}: {}".format(object_categ_dict["name"], round(object_categ_dict["confidence"] * 100))
+                    text = "{}: {}".format(object_categ_dict["name"].lower(), round(object_categ_dict["confidence"] * 100))
                     draw.rounded_rectangle((x0, y0, x1, y1), outline=outline,
                                            width=width, radius=radius)
+                    print("draw",object_categ_dict["name"])
                     font = ImageFont.truetype("Acme-Regular.ttf", fontsize)
                     bbox = draw.textbbox((0, 0), text, font=font)
                     text_width = bbox[2] - bbox[0]
@@ -117,7 +122,7 @@ class Prediction(object):
             new_dict = {}
             for dict_ in detected_objects:
                 if round(dict_["confidence"] * 100, 2) > threshold:
-                    if dict_["name"] == "person" and dict_["confidence"] > 0.6:
+                    if dict_["name"] == "person" and dict_["confidence"] > 0.5:
                         if dict_["name"] in new_dict:
                             new_dict[dict_["name"]]["confidence"].append(round(dict_["confidence"] * 100, 2))
                             new_dict[dict_["name"]]["count"] += 1

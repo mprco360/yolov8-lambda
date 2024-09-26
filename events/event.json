@@ -60,14 +60,14 @@
       "body": {
         "is_image_found": true,
         "student_session_id": 1234,
-        "bucket_name": "proctor360",
-        "src_bucket_name": "proctor360",
-        "src_destination": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
+        "bucket_name": "prod1proctor",
+        "src_bucket_name": "prod1proctor",
+        "src_destination": "ai/final/1726548304955-1726548304853.png",
         "organisation_id": "12345",
         "session_link": "vs1234",
         "exam_id": "12345",
-        "source_image": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
-        "ground_bucket_name": "proctor360",
+        "source_image": "face_photo/FUsEkWlADH2AojUG6f5b-1726548131045-1726548130707.png",
+        "ground_bucket_name": "prod1proctor",
         "face_match": true
       }
     }

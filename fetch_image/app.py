@@ -48,9 +48,13 @@ def fetch_image_handler(event, context):
                 parsed_url = urlparse(image_url)
                 bucket_name = parsed_url.netloc.split(".")[0]
                 destination_ = parsed_url.path.lstrip("/")
-                response = s3_client.Bucket(bucket_name).Object(destination_).get()
-                ground_truth = s3_client.Bucket(bucket_name).Object(data["source_image"]).get()
-                decoded_bytes = response['Body'].read()
+                try:
+                    response = s3_client.Bucket(bucket_name).Object(destination_).get()
+                    ground_truth = s3_client.Bucket(bucket_name).Object(data["source_image"]).get()
+                    decoded_bytes = response['Body'].read()
+                except Exception as e:
+                    print("Image Fetching Failed with exeception")
+                    print(e)
                 img = Image.open(BytesIO(decoded_bytes))
                 ground_truth_img = Image.open(BytesIO(ground_truth['Body'].read()))
                 try:

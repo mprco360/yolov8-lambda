@@ -1,0 +1,138 @@
+POST http://jivdcb55ia.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: jivdcb55ia.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 365
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/yolo_12345_vs12345_1726180593.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-13T023432.200.json
+
+###
+
+POST http://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: wseymf5uw2.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 365
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/yolo_12345_vs12345_1726180593.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-12T221149.200.json
+
+###
+
+POST http://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: wseymf5uw2.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 365
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/yolo_12345_vs12345_1726180593.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-12T214501.200.json
+
+###
+
+POST http://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: wseymf5uw2.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 365
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/yolo_12345_vs12345_1726180593.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-12T192844.200.json
+
+###
+
+POST http://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: wseymf5uw2.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 372
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/6246_JCZoILhks1JkbO45r2MG_1724248639.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-12T185846.200.json
+
+###
+
+POST http://wseymf5uw2.execute-api.us-east-1.amazonaws.com/Prod/detect/
+Host: wseymf5uw2.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 372
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/6246_JCZoILhks1JkbO45r2MG_1724248639.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}
+
+<> 2024-09-12T183621.200.json
+
+###
+

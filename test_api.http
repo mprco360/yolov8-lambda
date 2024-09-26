@@ -1,0 +1,15 @@
+POST /Prod/detect/ HTTP/1.1
+Host: jivdcb55ia.execute-api.us-east-1.amazonaws.com
+Content-Type: application/json
+Content-Length: 372
+
+{
+    "session_id": 123895,
+    "image_url": "https://proctor360.s3.amazonaws.com/test/ai/yolo_12345_vs12345_1726180593.jpg",
+    "bucket_name": "proctor360",
+    "organisation_id": "12345",
+    "session_link": "vs12345",
+    "exam_id": "12345",
+    "student_session_id": 12345,
+    "source_image":"face_photo/0067ZGCDO3e0TrUXzXFR-1588545008791-1588545006906.png"
+}

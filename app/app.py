@@ -77,11 +77,13 @@ def lambda_handler(event, context):
                 img = Image.open(BytesIO(decoded_bytes))
             
             image_dict = {"session_id": session_id, "image": img}
+            print(image_dict)
             detected_objects, img = p.process(object_dict, imagemode=True, image_dict=image_dict)
             response = {
                 "session_id": session_id,
                 "detected_objects": detected_objects
             }
+            print(detected_objects)
             detected_dict_formatted = []
             labels_set = {"remote", "laptop", "tv", "cell_phone", "person", "tablet", "persons", "book","cell phone"}
             tablet_computer = {"laptop", "tv", "tablet", "book", "tablet_computer"}
@@ -89,13 +91,14 @@ def lambda_handler(event, context):
             if len(detected_objects) == 0:
                 detected_dict_formatted.append({"name": "no_face", "confidence": 100})
             else:
-                if ("person" not in detected_objects):
+                if "person" not in detected_objects:
                     detected_dict_formatted.append({"name": "no_face", "confidence": 100})
-                elif not data["face_match"]:
-                    detected_dict_formatted.append({"name": "face_not_matched", "confidence": 100})
                 else:
+                    if not data["face_match"]:
+                        detected_dict_formatted.append({"name": "face_not_matched", "confidence": 100})
                     for key in detected_objects:
                         key = key.strip()
+                        print(key)
                         if key == "person" and detected_objects[key]["count"] > 1:
                             detected_dict_formatted.append({"name": f"multiple_people", "confidence":
                                 max(detected_objects[key]["confidence"])})
@@ -110,12 +113,32 @@ def lambda_handler(event, context):
                             else:
                                 continue
 
-            print(detected_dict_formatted)
-            print(detected_objects)
+            print("detected_dict_form",detected_dict_formatted)
+            print("detected_obj_form",detected_objects)
+            if data["face_match"]:
+                tmpRem = None
+                for i in range(len(detected_dict_formatted)):
+                    if detected_dict_formatted[i]["name"] == "multiple_people":
+                        tmpRem = i
+                        break
+                if tmpRem is not None:
+                    detected_dict_formatted.pop(tmpRem)
+            
+            if data["face_match"]:
+                tmpRem = None
+                for i in range(len(detected_dict_formatted)):
+                    if detected_dict_formatted[i]["name"] == "no_face":
+                        tmpRem = i
+                        break
+                if tmpRem is not None:
+                    detected_dict_formatted.pop(tmpRem)
+                        
             if len(detected_dict_formatted) > 0:
                 buffer = BytesIO()
                 img_ = img.convert("RGB")
-                img_.save(buffer, 'JPEG')
+                r, g, b = img_.split()
+                img_ = Image.merge("RGB", (b, g, r))
+                img_.save(buffer, format="PNG")
                 buffer.seek(0)
                 date = datetime.utcnow()
                 utc_time = calendar.timegm(date.utctimetuple())
@@ -124,16 +147,20 @@ def lambda_handler(event, context):
                                                              ExtraArgs={'ContentType': 'image/jpeg'})
 
                 uri = os.environ['MONGO_URL']
+                print(uri)
                 client = MongoClient(uri, server_api=ServerApi(version="1"))
 
                 # Send a ping to confirm a successful connection
                 try:
                     client.admin.command('ping')
+                    print("success")
                 except Exception as e:
                     print(e)
 
-                db = client.proctor360
+                db = client.prod1
                 collection = db.ai_live_labels
+                print(db)
+                print("pushing ....") 
                 post_data = {
                     "labels": detected_dict_formatted,
                     "face_matched": data["face_match"],
@@ -148,9 +175,10 @@ def lambda_handler(event, context):
                 }
                 print(post_data)
                 result = collection.insert_one(post_data)
+                print("pushhed",result)
                 return {
                     'statusCode': 200,
-                    'body': json.dumps(response)
+                    'body': json.dumps(detected_objects)
                 }
         else:
             return {
@@ -165,7 +193,7 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world",
+            "message": json.dumps(detected_objects),
             # "location": ip.text.replace("\n", "")
         }),
     }

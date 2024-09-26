@@ -57,12 +57,12 @@
   },
   "body": {
     "session_id": 13895,
-    "image_url": "https://proctor360.s3.amazonaws.com/face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png",
-    "bucket_name": "proctor360",
+    "image_url": "https://prod1proctor.s3.amazonaws.com/ai/final/1726548304955-1726548304853.png",
+    "bucket_name": "prod1proctor",
     "organisation_id": "145",
     "session_link": "vs146",
     "exam_id": "145",
     "student_session_id": 145,
-    "source_image": "face_photo/jmC2pmUlpOAVmLdbkITC-1724458534135-1724458534003.png"
+    "source_image": "face_photo/FUsEkWlADH2AojUG6f5b-1726548131045-1726548130707.png"
 }
 }

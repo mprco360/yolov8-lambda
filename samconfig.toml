@@ -1,34 +1,9 @@
-# More information about the configuration file can be found here:
-# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
 version = 0.1
-
-[default]
-[default.global.parameters]
-stack_name = "yolo-test"
-
-[default.build.parameters]
-parallel = true
-
-[default.validate.parameters]
-lint = true
-
-
-
-[default.package.parameters]
-resolve_s3 = true
-
-[default.sync.parameters]
-watch = true
-
-[default.local_start_api.parameters]
-warm_containers = "EAGER"
-
-[default.local_start_lambda.parameters]
-warm_containers = "EAGER"
-
 [default.deploy.parameters]
+stack_name = "yolo-prod"
 resolve_s3 = true
-s3_prefix = "yolo-test"
+s3_prefix = "yolo-prod"
 region = "us-east-1"
+profile = "default"
 capabilities = "CAPABILITY_IAM"
-image_repositories = ["InferenceFunction=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/inferencefunction7c73919drepo", "ProcessImageLambda=942792151209.dkr.ecr.us-east-1.amazonaws.com/yolo4fded146/processimagelambdafb51752crepo"]
+image_repositories = ["InferenceFunction=230575066025.dkr.ecr.us-east-1.amazonaws.com/yoloprod61ab2b6b/inferencefunction7c73919drepo", "ProcessImageLambda=230575066025.dkr.ecr.us-east-1.amazonaws.com/yoloprod61ab2b6b/processimagelambdafb51752crepo", "RecognitionLambda=230575066025.dkr.ecr.us-east-1.amazonaws.com/yoloprod61ab2b6b/recognitionlambdad5faa89drepo"]
